@@ -771,8 +771,8 @@ function renderStrip(){
       // Volume HL block
       const t_hl  = t.reduce((a,p)=>a+(p.vol_may_hl||0),0);
       const t_bhl = t.reduce((a,p)=>a+(p.budget_hl||0),0);
-      const fq_hl = fqD.reduce((a,p)=>a+(p.vol_may_hl||0),0);
-      const fq_bhl= fqD.reduce((a,p)=>a+(p.budget_hl||0),0);
+      const fq_hl = fq.reduce((a,p)=>a+(p.vol_may_hl||0),0);
+      const fq_bhl= fq.reduce((a,p)=>a+(p.budget_hl||0),0);
       const tot_hl= t_hl+fq_hl;
       const tot_bhl=t_bhl+fq_bhl;
       const pace=DAY_OF_MONTH/TOTAL_DAYS;
@@ -1832,6 +1832,13 @@ const PL_LINES = [
   {key:'margen',  lbl:'9. % Margen Final',          target:{PUB:28.0, BODEGA:20.0}, lower:false,tol:3,
    fn:(p)=> p.pl_margen_pct!=null? p.pl_margen_pct*100               :null},
 ];
+
+
+// ═══════════════════════════════════════════
+// CHECKLIST
+// ═══════════════════════════════════════════
+function updateCk(){ /* checklist state managed inline */ }
+function resetCk(){ /* reset checklist */ }
 
 
 // ═══════════════════════════════════════════
