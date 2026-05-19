@@ -115,7 +115,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--ink);font-
 .zp-hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .zp-title{font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:.3px}
 .zp-resp{font-size:10px;color:var(--muted);margin-top:1px}
-.zp-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.zp-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .zp-kpi{background:var(--surface2);border-radius:var(--r-sm);padding:6px 8px}
 .zp-kpi-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:.5px;color:var(--fog);margin-bottom:2px}
 .zp-kpi-val{font-weight:800;font-size:15px;line-height:1}
@@ -788,14 +788,12 @@ function renderStrip(){
       return '<div class="ms-block" style="border-right:1px solid rgba(255,255,255,.1);padding:0 18px;min-width:200px">'
         +'<div class="ms-lbl" style="color:#60B4F0;font-size:10px;font-weight:700;margin-bottom:4px">🍺 VOLUMEN HL</div>'
         +'<div style="display:flex;gap:16px;margin-top:4px">'
-          // Temple col
           +'<div>'
             +'<div style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase">Temple</div>'
             +'<div style="font-size:18px;font-weight:800;color:#58A6FF">'+t_hl.toFixed(0)+' HL</div>'
             +'<div style="font-size:9px;color:rgba(255,255,255,.5)">BU:'+t_bhl.toFixed(0)+' · Cumpl:<span style="color:'+tCol+';font-weight:700">'+(t_ca_hl!=null?t_ca_hl.toFixed(0)+'%':'—')+'</span></div>'
             +'<div style="font-size:9px;color:rgba(255,255,255,.5)">LE:'+t_le_hl+' HL · <span style="color:'+(t_brecha>=0?'#4ADE80':'#f87171')+'">'+(t_brecha>=0?'+':'')+t_brecha+' HL</span></div>'
           +'</div>'
-          // FQ col
           +'<div>'
             +'<div style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase">FQ <span style="font-size:7px;opacity:.6">*p.14-18</span></div>'
             +'<div style="font-size:18px;font-weight:800;color:#F0A500">'+fq_hl.toFixed(0)+' HL</div>'
@@ -909,6 +907,18 @@ function renderZonePanels(){
             <div class="zp-kpi-val" style="color:${npsColor(nAvg)}">${nAvg!=null?nAvg.toFixed(1):'—'}</div>
             <div class="zp-kpi-sub">meta ${NPS_META}%</div>
           </div>
+          ${(()=>{
+            const zHl    = zp.reduce((a,p)=>a+(p.vol_may_hl||0),0);
+            const zHlBud = zp.reduce((a,p)=>a+(p.budget_hl||0),0);
+            if(!zHlBud) return '';
+            const hlCa   = zHl/(zHlBud*(DAY_OF_MONTH/TOTAL_DAYS))*100;
+            const hlLe   = Math.round(zHl*TOTAL_DAYS/DAY_OF_MONTH);
+            const hlCol  = hlCa>=96?'var(--verde)':hlCa>=86?'var(--amarillo)':'var(--rojo)';
+            return '<div class="zp-kpi"><div class="zp-kpi-lbl">🍺 Vol HL</div>'
+              +'<div class="zp-kpi-val" style="color:'+hlCol+'">'+zHl.toFixed(0)+'</div>'
+              +'<div class="zp-kpi-sub">LE '+hlLe+' / BU '+zHlBud.toFixed(0)+'</div>'
+              +'</div>';
+          })()}
         </div>
       </div>
       <div class="pdv-hdr">
