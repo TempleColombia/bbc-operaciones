@@ -768,48 +768,39 @@ function renderStrip(){
       +'<div class="ms-sub">Brecha: <span style="color:'+(ag.le>=ag.budget?'#4ADE80':'#f87171')+'">'+(ag.le>=ag.budget?'+':'')+fB(ag.le-ag.budget)+'</span></div>'
       +'</div>'
     +(()=>{
-      // Volume HL block
-      const t_hl  = t.reduce((a,p)=>a+(p.vol_may_hl||0),0);
-      const t_bhl = t.reduce((a,p)=>a+(p.budget_hl||0),0);
-      const fq_hl = fq.reduce((a,p)=>a+(p.vol_may_hl||0),0);
-      const fq_bhl= fq.reduce((a,p)=>a+(p.budget_hl||0),0);
-      const tot_hl= t_hl+fq_hl;
-      const tot_bhl=t_bhl+fq_bhl;
-      const pace=DAY_OF_MONTH/TOTAL_DAYS;
-      const t_le_hl  = t_bhl>0?Math.round(t_hl/pace):0;
-      const fq_le_hl = fq_bhl>0?Math.round(fq_hl/pace):0;
-      const tot_le_hl= Math.round(tot_hl/pace);
-      const t_ca_hl  = t_bhl>0?t_hl/(t_bhl*pace)*100:null;
-      const tot_ca_hl= tot_bhl>0?tot_hl/(tot_bhl*pace)*100:null;
-      const tCol  = t_ca_hl==null?'#fff':t_ca_hl>=96?'#4ADE80':t_ca_hl>=86?'#fbbf24':'#f87171';
-      const totCol= tot_ca_hl==null?'#fff':tot_ca_hl>=96?'#4ADE80':tot_ca_hl>=86?'#fbbf24':'#f87171';
-      const t_brecha = Math.round(t_le_hl - t_bhl);
-      const tot_brecha= Math.round(tot_le_hl - tot_bhl);
-      return '<div class="ms-block" style="border-right:1px solid rgba(255,255,255,.1);padding:0 18px;min-width:200px">'
-        +'<div class="ms-lbl" style="color:#60B4F0;font-size:10px;font-weight:700;margin-bottom:4px">🍺 VOLUMEN HL</div>'
-        +'<div style="display:flex;gap:16px;margin-top:4px">'
+      const t_hl   = t.reduce((a,p)=>a+(p.vol_may_hl||0),0);
+      const t_bhl  = t.reduce((a,p)=>a+(p.budget_hl||0),0);
+      const fq_hl  = fq.reduce((a,p)=>a+(p.vol_may_hl||0),0);
+      const fq_bhl = fq.reduce((a,p)=>a+(p.budget_hl||0),0);
+      const pace   = DAY_OF_MONTH/TOTAL_DAYS;
+      const t_le   = t_bhl>0 ? Math.round(t_hl/pace) : 0;
+      const t_ca   = t_bhl>0 ? t_hl/(t_bhl*pace)*100 : null;
+      const t_brecha = t_le - Math.round(t_bhl);
+      const tCol   = t_ca==null?'#fff':t_ca>=96?'#4ADE80':t_ca>=86?'#fbbf24':'#f87171';
+      return '<div class="ms-block" style="border-right:1px solid rgba(255,255,255,.1);padding:0 20px;min-width:260px">'
+        +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'
+          +'<span style="font-size:14px">🍺</span>'
+          +'<span style="font-size:10px;font-weight:700;color:#60B4F0;letter-spacing:.5px">VOLUMEN HL</span>'
+        +'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
           +'<div>'
-            +'<div style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase">Temple</div>'
-            +'<div style="font-size:18px;font-weight:800;color:#58A6FF">'+t_hl.toFixed(0)+' HL</div>'
-            +'<div style="font-size:9px;color:rgba(255,255,255,.5)">BU:'+t_bhl.toFixed(0)+' · Cumpl:<span style="color:'+tCol+';font-weight:700">'+(t_ca_hl!=null?t_ca_hl.toFixed(0)+'%':'—')+'</span></div>'
-            +'<div style="font-size:9px;color:rgba(255,255,255,.5)">LE:'+t_le_hl+' HL · <span style="color:'+(t_brecha>=0?'#4ADE80':'#f87171')+'">'+(t_brecha>=0?'+':'')+t_brecha+' HL</span></div>'
+            +'<div style="font-size:8px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px">🏪 Temple</div>'
+            +'<div style="font-size:22px;font-weight:800;color:#58A6FF;line-height:1">'+Math.round(t_hl)+'<span style="font-size:11px;font-weight:400"> HL</span></div>'
+            +'<div style="font-size:9px;color:rgba(255,255,255,.5);margin-top:2px">'
+              +'Cumpl <span style="color:'+tCol+';font-weight:700">'+(t_ca!=null?t_ca.toFixed(0)+'%':'—')+'</span>'
+            +'</div>'
+            +'<div style="font-size:9px;color:rgba(255,255,255,.4)">LE '+t_le+' / BU '+Math.round(t_bhl)+'</div>'
+            +'<div style="font-size:9px;color:'+(t_brecha>=0?'#4ADE80':'#f87171')+';font-weight:600">'+(t_brecha>=0?'+':'')+t_brecha+' HL</div>'
           +'</div>'
           +'<div>'
-            +'<div style="font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase">FQ <span style="font-size:7px;opacity:.6">*p.14-18</span></div>'
-            +'<div style="font-size:18px;font-weight:800;color:#F0A500">'+fq_hl.toFixed(0)+' HL</div>'
-            +'<div style="font-size:9px;color:rgba(255,255,255,.5)">BU:'+fq_bhl.toFixed(0)+' HL</div>'
-            +'<div style="font-size:9px;color:rgba(255,255,255,.5)">LE:'+fq_le_hl+' HL</div>'
+            +'<div style="font-size:8px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px">🤝 FQ</div>'
+            +'<div style="font-size:22px;font-weight:800;color:#F0A500;line-height:1">'+(fq_hl>0?Math.round(fq_hl):'—')+'<span style="font-size:11px;font-weight:400"> HL</span></div>'
+            +'<div style="font-size:9px;color:rgba(255,255,255,.4);margin-top:2px">BU '+Math.round(fq_bhl)+' HL</div>'
+            +'<div style="font-size:8px;color:rgba(255,255,255,.25);font-style:italic">datos parciales</div>'
           +'</div>'
         +'</div>'
-        // Total bar
-        +'<div style="margin-top:6px;padding-top:4px;border-top:1px solid rgba(255,255,255,.1)">'
-          +'<div style="font-size:9px;font-weight:700;color:#fff">Total: '+tot_hl.toFixed(0)+' HL · LE <span style="color:'+totCol+'">'+tot_le_hl+' HL</span></div>'
-          +'<div style="font-size:9px;color:rgba(255,255,255,.5)">BU:'+tot_bhl.toFixed(0)+' · Brecha: <span style="color:'+(tot_brecha>=0?'#4ADE80':'#f87171')+'">'+(tot_brecha>=0?'+':'')+tot_brecha+' HL</span></div>'
-          +'<div style="font-size:8px;color:rgba(255,255,255,.3);margin-top:2px">vs 2025: pendiente datos LY</div>'
-        +'</div>'
-        +'</div>';
-    })()
-    +'<div class="ms-block" style="border-right:1px solid rgba(255,255,255,.1);padding:0 18px">'
+      +'</div>';
+    })()    +'<div class="ms-block" style="border-right:1px solid rgba(255,255,255,.1);padding:0 18px">'
       +'<div class="ms-lbl">NPS GLOBAL (Temple)</div>'
       +'<div class="ms-val" style="color:'+(nAvg!=null&&nAvg>=90?'#4ADE80':'#fbbf24')+'">'+( nAvg!=null?nAvg.toFixed(1):'—')+'</div>'
       +'<div class="ms-sub">Meta 90% · '+nN.toLocaleString()+' encuestas</div>'
