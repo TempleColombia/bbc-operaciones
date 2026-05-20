@@ -388,7 +388,7 @@ table.tbl .bold{font-weight:600;color:var(--ink)}
       </div>
       <div style="padding:8px 10px;background:var(--surface2);border-radius:6px">
         <div style="font-weight:700;color:var(--rojo)">$35M/mes</div>
-        <</div>
+        </div>
         <div style="color:var(--muted);font-size:10px">Scope detallado, retainer fijo</div>
       </div>
       <div style="padding:8px 10px;background:var(--surface2);border-radius:6px">
@@ -1908,6 +1908,7 @@ function showTab(id, el){
   var tab = document.getElementById('tab-'+id);
   if(tab) tab.classList.add('active');
   if(el) el.classList.add('active');
+  window.scrollTo(0,0);
   if(id==='ranking')   renderRanking();
   if(id==='kpis')      renderKPIs();
   if(id==='historico') { renderHistorico(); setTimeout(function(){ renderHistorico(); renderPLMatrix(); },150); }
