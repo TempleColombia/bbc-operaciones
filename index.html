@@ -949,11 +949,6 @@ function renderZonePanels(){
             <div class="zp-kpi-val" style="color:${totalLE/totalBudget>=0.96?'var(--verde)':totalLE/totalBudget>=0.86?'var(--amarillo)':'var(--rojo)'}">${fB(totalLE)}</div>
             <div class="zp-kpi-sub">budget ${fB(totalBudget)}</div>
           </div>
-          <div class="zp-kpi">
-            <div class="zp-kpi-lbl">NPS</div>
-            <div class="zp-kpi-val" style="color:${npsColor(nAvg)}">${nAvg!=null?nAvg.toFixed(1):(z.id.includes('_FQ')?'n/d':'—')}</div>
-            <div class="zp-kpi-sub">${nAvg!=null?'meta '+NPS_META+'%':(z.id.includes('_FQ')?'sin datos FQ':'meta '+NPS_META+'%')}</div>
-          </div>
           ${(()=>{
             const zHl    = zp.reduce((a,p)=>a+(p.vol_may_hl||0),0);
             const zHlBud = zp.reduce((a,p)=>a+(p.budget_hl||0),0);
@@ -968,6 +963,14 @@ function renderZonePanels(){
           })()}
         </div>
       </div>
+      <div class="pdv-hdr">
+        <div></div><div>PDV</div>
+        <div style="text-align:right">Mayo</div>
+        <div style="text-align:right">Cumpl.</div>
+        <div style="text-align:right">LE</div>
+        <div style="text-align:right">NPS</div>
+      </div>
+      ${rows}
     </div>`;
   }).join('');
 }
