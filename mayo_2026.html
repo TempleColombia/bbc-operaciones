@@ -2044,6 +2044,39 @@ function renderKPIs(){
       html2+='</div>';
     }
     html2+='</div>';
+    // ── BONO NR > 105% (PDVs without KPI variable) ──
+    var bonusPdvs=[];
+    PDV_DATA.forEach(function(p){
+      if(p.negocio==='FQ') return;
+      var nr=p.nr_mayo,bu=p.budget_nr;
+      if(!bu) return;
+      var cumpl=nr/bu*100;
+      if(cumpl<105) return;
+      // Check if already in HOF (has KPI variable)
+      var inHof=HOF.some(function(h){return h.name===p.name;});
+      var bonus=p.tipo==='PUB'?250000:150000;
+      bonusPdvs.push({name:p.name,short:p.short||p.name,tipo:p.tipo,cumpl:cumpl,bonus:bonus,inHof:inHof});
+    });
+    bonusPdvs.sort(function(a,b){return b.cumpl-a.cumpl;});
+
+    if(bonusPdvs.length){
+      html2+='<div style="margin-top:12px">';
+      html2+='<div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">⭐ Bono NR &gt; 105% &mdash; '+bonusPdvs.length+' PDVs</div>';
+      html2+='<div style="display:flex;gap:8px;flex-wrap:wrap">';
+      bonusPdvs.forEach(function(p){
+        var col=p.inHof?'var(--verde)':'var(--blue)';
+        var tag=p.inHof?' +bono':'';
+        html2+='<div style="background:var(--bg3);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:6px">';
+        html2+='<span style="font-weight:700;font-size:12px">'+p.short+'</span>';
+        html2+='<span style="font-size:10px;color:var(--muted)">'+p.tipo+' · '+p.cumpl.toFixed(0)+'%</span>';
+        html2+='<span style="font-size:11px;font-weight:700;color:'+col+'">+$'+(p.bonus/1000).toFixed(0)+'K'+tag+'</span>';
+        html2+='</div>';
+      });
+      html2+='</div>';
+      html2+='<div style="font-size:10px;color:var(--muted);margin-top:6px">PUBs +$250K · Bodegas +$150K por superar 105% del presupuesto NR</div>';
+      html2+='</div>';
+    }
+
     document.getElementById('hallOfFame').innerHTML=html2;
   })();
 
