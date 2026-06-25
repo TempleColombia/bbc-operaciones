@@ -1941,7 +1941,15 @@ function renderKPIs(){
       +'<div style="margin-left:auto;text-align:right">'
         +'<div style="font-size:9px;color:var(--fog);text-transform:uppercase;letter-spacing:.5px">Variable proyectado</div>'
         +'<div style="font-size:26px;font-weight:900;color:'+mCol+'">'+(payout>0?fK(payout):'&#8212;')+'</div>'
-        +'<div style="font-size:10px;color:var(--fog)">'+coordOk+'/8 KPIs &middot; '+(mult>0?mult+'%':'&lt; 6/8')+(cmvGreen?' &middot; CMV &#x00D7;2':'')+'</div>'
+        +(function(){
+      // Zone NR bonus: if zone total NR >= 102% of zone BU → +$300K
+      var zNR=cpdvs.reduce(function(a,p){return a+p.nr_mayo;},0);
+      var zBU=cpdvs.reduce(function(a,p){return a+p.budget_nr;},0);
+      var zCumpl=zBU>0?zNR/zBU*100:0;
+      var zBonus=zCumpl>=102?300000:0;
+      var bonusLine=zBonus>0?'<div style="font-size:11px;color:var(--verde);font-weight:700">+$300K Bono Zona NR '+zCumpl.toFixed(1)+'%</div>':'';
+      return '<div style="font-size:10px;color:var(--fog)">'+coordOk+'/8 KPIs &middot; '+(mult>0?mult+'%':'&lt; 6/8')+(cmvGreen?' &middot; CMV &#x00D7;2':'')+'</div>'+bonusLine;
+    })()
         +'<div style="font-size:9px;color:var(--fog)">$900K / $1M / $1.4M</div>'
       +'</div>'
     +'</div>';
@@ -1985,7 +1993,7 @@ function renderKPIs(){
       if(!months.length) return;
       var avg=months.reduce(function(a,b){return a+b;},0)/months.length;
       var lvl=p.tipo==='PUB'?(avg>200e6?'I':avg>=150e6?'II':'III'):(avg>50e6?'I':'II');
-      var VAR={PUB:{I:[450,500,700],II:[360,400,560],III:[315,350,490]},BODEGA:{I:[315,350,490],II:[270,300,420]}};
+      var VAR={PUB:{I:[450000,500000,700000],II:[360000,400000,560000],III:[315000,350000,490000]},BODEGA:{I:[315000,350000,490000],II:[270000,300000,420000]}};
       var row=VAR[p.tipo][lvl];
       var payout=eff>=8?row[2]:eff>=7?row[1]:eff>=6?row[0]:0;
       if(payout>0) HOF.push({name:p.name,short:p.short||p.name,tipo:p.tipo,lvl:lvl,eff:eff,
@@ -2012,7 +2020,9 @@ function renderKPIs(){
         html2+='<div style="font-weight:800;font-size:13px;margin-top:4px">'+p.short+'</div>';
         html2+='<div style="font-size:10px;color:var(--muted)">'+p.tipo+' Niv'+p.lvl+'</div>';
         html2+='<div style="font-size:26px;color:var(--verde);margin:6px 0">'+p.eff+'/8</div>';
-        html2+='<div style="font-size:11px;color:var(--amber);font-weight:700">$'+(p.payout/1000).toFixed(0)+'K · 100%</div>';
+        var bonus=p.cumpl>=105?(p.tipo==='PUB'?250000:150000):0;
+        var bonusStr=bonus>0?' +$'+(bonus/1000).toFixed(0)+'K⭐':'';
+        html2+='<div style="font-size:11px;color:var(--amber);font-weight:700">$'+(p.payout/1000).toFixed(0)+'K · 100%'+bonusStr+'</div>';
         html2+='<div style="font-size:10px;color:var(--muted)">NR '+p.cumpl.toFixed(0)+'%'+(p.cmv?' · ★CMV':'')+'</div>';
         html2+='</div>';
       });
@@ -2026,7 +2036,8 @@ function renderKPIs(){
         html2+='<div style="background:var(--bg3);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px">';
         html2+='<span style="font-weight:700;font-size:12px">'+p.short+'</span>';
         html2+='<span style="font-size:10px;color:var(--muted)">'+p.tipo+' Niv'+p.lvl+' · '+p.eff+'/8</span>';
-        html2+='<span style="font-size:11px;color:var(--amarillo);font-weight:700">$'+(p.payout/1000).toFixed(0)+'K</span>';
+        var bon2=p.cumpl>=105?(p.tipo==='PUB'?250000:150000):0;
+        html2+='<span style="font-size:11px;color:var(--amarillo);font-weight:700">$'+(p.payout/1000).toFixed(0)+'K'+(bon2>0?' +$'+(bon2/1000).toFixed(0)+'K⭐':'')+'</span>';
         if(p.cmv) html2+='<span style="font-size:9px;color:var(--amber)">★CMV</span>';
         html2+='</div>';
       });
